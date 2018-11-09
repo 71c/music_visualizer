@@ -125,7 +125,7 @@ void addImages() {
   PImage im;
   while (true) {
     while (images.size() < 17) {
-      im = generateNoiseHorizontal(width, height, 9);
+      im = generateNoiseHorizontal(width, height, 9, new float[] {0, 0, 0});
       im.filter(ERODE);
       im.filter(DILATE);
       im.filter(INVERT);

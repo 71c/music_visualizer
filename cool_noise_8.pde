@@ -1,15 +1,15 @@
-PImage generateNoise(int w, int h, float deviation, boolean isGaussian) {
+PImage generateNoise(int w, int h, float deviation, boolean isGaussian, float[] bias) {
   float[][][] arr = new float[h][w][3];
   PImage img = createImage(w, h, RGB);
   img.loadPixels();
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
-      for (int i = 0; i < 3; i++) {        
+      for (int i = 0; i < 3; i++) {
         arr[y][x][i] = constrain(
             (x == 0
               ? (y == 0 ? 127 : arr[y - 1][x][i])
               : (y == 0 ? arr[y][x - 1][i] : (arr[y][x-1][i] + arr[y - 1][x][i]) / 2)
-            ) + (isGaussian ? randomGaussian() : random(3.464) - 1.732) * deviation,
+            ) + ((isGaussian ? randomGaussian() : random(3.464) - 1.732) + bias[i] ) * deviation,
             0, 256
         );
       }
@@ -21,7 +21,7 @@ PImage generateNoise(int w, int h, float deviation, boolean isGaussian) {
 }
 
 PImage generateNoise(int w, int h, float deviation) {
-  return generateNoise(w, h, deviation, false);
+  return generateNoise(w, h, deviation, false, new float[] {0, 0, 0});
 }
 
 void drawSlice(PImage source, int startX, float startY, int stopX) {
@@ -29,9 +29,9 @@ void drawSlice(PImage source, int startX, float startY, int stopX) {
   copy(source, int(startX), 0, int(deltaX), source.height, int(startX), int(startY), int(deltaX), source.height);
 }
 
-PImage generateNoiseHorizontal(int w, int h, float deviation, boolean isGaussian) {
+PImage generateNoiseHorizontal(int w, int h, float deviation, boolean isGaussian, float[] bias) {
   int dimension = ceil((w + h) / sqrt(2));
-  PImage img = generateNoise(dimension, dimension, deviation, isGaussian);
+  PImage img = generateNoise(dimension, dimension, deviation, isGaussian, bias);
   PGraphics pg = createGraphics(w, h);
   pg.beginDraw();
   pg.translate(-h / 2, h / 2);
@@ -41,6 +41,6 @@ PImage generateNoiseHorizontal(int w, int h, float deviation, boolean isGaussian
   return pg.get();
 }
 
-PImage generateNoiseHorizontal(int w, int h, float deviation) {
-  return generateNoiseHorizontal(w, h, deviation, false);
+PImage generateNoiseHorizontal(int w, int h, float deviation, float[] bias) {
+  return generateNoiseHorizontal(w, h, deviation, false, bias);
 }
