@@ -65,7 +65,7 @@ void draw() {
   // 25 to 90 & threshold=158 works well with Olive
   float beatAmt = fft.calcAvg(35, 80);
   
-  float spectrumWeight = 0.6;
+  float spectrumWeight = 0.65;
   
   for(int i = 0; i < bufferSizeUsed; i += bufferStep) {
     int x1 = int(map(i, 0, bufferSizeUsed, 0, width));
@@ -109,14 +109,12 @@ void draw() {
   int timeChange = millis() - lastBeatTime;
   if (timeChange >= 367 && avgBass > threshold) {
     lastBeatTime = millis();
-    pg = images.remove(0);
+    pg = images.remove(0);    
   }
   
   if (infoTextOn)
     text(infoText, 26, 42);
-  
-  //ellipse(20, beatAmt + 100, 10, 10);
-  
+    
   ellipse(40, avgBass + 100, 10, 10);
   line(0, threshold + 100, width, threshold + 100);
   println(player.mix.level());
@@ -124,9 +122,14 @@ void draw() {
 
 
 void addImages() {
+  PImage im;
   while (true) {
     while (images.size() < 17) {
-      images.add(generateNoiseHorizontal(width, height, 9));
+      im = generateNoiseHorizontal(width, height, 9);
+      im.filter(ERODE);
+      im.filter(DILATE);
+      im.filter(INVERT);
+      images.add(im);
       //images.add(generateNoiseHorizontal(width, height, random(20)));
       //images.add(generateNoiseHorizontal(width, height, player.mix.level() * 18));
     }
