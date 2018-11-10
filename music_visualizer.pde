@@ -33,8 +33,9 @@ void setup() {
   //player = minim.loadFile("04 Secondary Complications (Original Mix).mp3", 2048);
   //player = minim.loadFile("olive.mp3", 2048);
   player = minim.loadFile("all_i_have.mp3", 2048);
+  //player = minim.loadFile("Mii Channel Music.mp3", 2048);
+  //player = minim.loadFile("Beethoven's 5th Symphony.mp3", 2048);
   //player = minim.loadFile("glish.mp3", 2048);
-  //player = minim.loadFile("track.wav", 2048);
   
   //player = minim.loadFile("Rob Newman's Neuropolis (Series 1, Ep 1).mp3", 2048);
   
@@ -45,9 +46,9 @@ void setup() {
   bufferSizeUsed = player.bufferSize() / 2;
   bufferStep = 1;
   
-  images.add(generateNoiseHorizontal(width, height, 9));
-  images.add(generateNoiseHorizontal(width, height, 9));
-  images.add(generateNoiseHorizontal(width, height, 9));
+  images.add(generateNoiseHorizontal(width, height, 9, new float[] {0, 0, 0}));
+  images.add(generateNoiseHorizontal(width, height, 9, new float[] {0, 0, 0}));
+  images.add(generateNoiseHorizontal(width, height, 9, new float[] {0, 0, 0}));
   thread("addImages");
   pg = images.remove(0);
   
@@ -117,21 +118,14 @@ void draw() {
     
   ellipse(40, avgBass + 100, 10, 10);
   line(0, threshold + 100, width, threshold + 100);
-  println(player.mix.level());
 }
 
 
 void addImages() {
-  PImage im;
+  float amt = 0.03;
   while (true) {
     while (images.size() < 17) {
-      im = generateNoiseHorizontal(width, height, 9, new float[] {0, 0, 0});
-      im.filter(ERODE);
-      im.filter(DILATE);
-      im.filter(INVERT);
-      images.add(im);
-      //images.add(generateNoiseHorizontal(width, height, random(20)));
-      //images.add(generateNoiseHorizontal(width, height, player.mix.level() * 18));
+      images.add(generateNoiseHorizontal(width, height, random(7) + 5.5, new float[] {random(amt) - amt / 2, random(amt) - amt / 2, random(amt) - amt / 2}));
     }
     delay(3000);
   }
