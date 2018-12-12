@@ -9,11 +9,14 @@ PImage generateNoise(int w, int h, float deviation, boolean isGaussian, float[] 
             (x == 0
               ? (y == 0 ? 127 : arr[y - 1][x][i])
               : (y == 0 ? arr[y][x - 1][i] : (arr[y][x-1][i] + arr[y - 1][x][i]) / 2)
-            ) + ((isGaussian ? randomGaussian() : random(3.464) - 1.732) + bias[i] ) * deviation,
-            0, 256
+            ) + ((isGaussian ? randomGaussian() : random(-1.732, 1.732)) + bias[i]) * deviation,
+            0, 255
         );
       }
-      img.pixels[y * w + x] = color(arr[y][x][0], arr[y][x][1], arr[y][x][2]);
+      int r = (int) arr[y][x][0] << 16;
+      int g = (int) arr[y][x][1] << 8;
+      int b = (int) arr[y][x][2];
+      img.pixels[y * w + x] = r | g | b;
     }
   }
   img.updatePixels();
@@ -30,7 +33,7 @@ void drawSlice(PImage source, int startX, float startY, int stopX) {
 }
 
 PImage generateNoiseHorizontal(int w, int h, float deviation, boolean isGaussian, float[] bias) {
-  int dimension = ceil((w + h) / sqrt(2));
+  int dimension = ceil((w + h) / sqrt(2)); // w cos(a) + h sin(a)
   PImage img = generateNoise(dimension, dimension, deviation, isGaussian, bias);
   PGraphics pg = createGraphics(w, h);
   pg.beginDraw();

@@ -27,12 +27,15 @@ String infoText = "";
 
 void setup() {
   size(1024, 800, P2D);
+  //fullScreen(P2D);
+  //size(1440, 900, P2D);
   
   minim = new Minim(this);
   //player = minim.loadFile("Last Life.mp3", 2048);
   //player = minim.loadFile("04 Secondary Complications (Original Mix).mp3", 2048);
   //player = minim.loadFile("olive.mp3", 2048);
-  player = minim.loadFile("all_i_have.mp3", 2048);
+  //player = minim.loadFile("all_i_have.mp3", 2048);
+  player = minim.loadFile("Paint rain - Music Visualizer 1.4.mp3", 2048);
   //player = minim.loadFile("Mii Channel Music.mp3", 2048);
   //player = minim.loadFile("Beethoven's 5th Symphony.mp3", 2048);
   //player = minim.loadFile("glish.mp3", 2048);
@@ -69,12 +72,12 @@ void draw() {
   float spectrumWeight = 0.65;
   
   for(int i = 0; i < bufferSizeUsed; i += bufferStep) {
-    int x1 = int(map(i, 0, bufferSizeUsed, 0, width));
-    int x2 = int(map(i + bufferStep, 0, bufferSizeUsed, 0, width));
+    int x1 = int(float(i) / bufferSizeUsed * width);
+    int x2 = int(float(i + bufferStep) / bufferSizeUsed * width);
     
-    // equal weight
+    // equal weight of spectrum vs waveform
     //drawSlice(pg, x1, (log(fft.getBand(i) + 1) + player.mix.get(i)) * amp + amp * 4, x2);
-    // arbitrary weights
+    // arbitrary weights of spectrum vs waveform
     drawSlice(pg, x1, (log(fft.getBand(i) + 1) * spectrumWeight + player.mix.get(i) * (1 - spectrumWeight)) * 2 * amp + amp * 4, x2);
     
     
@@ -105,12 +108,12 @@ void draw() {
   
   // threshold=95 (-->79 actually), timeChange >= 900, 35 to 80, hamming     works with Olive
   //                                                                         also works with Glish! But with the 900 the quicker beats aren't captured
-  float threshold = 200;
+  float threshold = 150;
   
   int timeChange = millis() - lastBeatTime;
   if (timeChange >= 367 && avgBass > threshold) {
     lastBeatTime = millis();
-    pg = images.remove(0);    
+    pg = images.remove(0);
   }
   
   if (infoTextOn)
@@ -118,14 +121,17 @@ void draw() {
     
   ellipse(40, avgBass + 100, 10, 10);
   line(0, threshold + 100, width, threshold + 100);
+  
+  //println(frameRate);
 }
 
 
 void addImages() {
-  float amt = 0.03;
+  float amt = 0.015;
   while (true) {
     while (images.size() < 17) {
-      images.add(generateNoiseHorizontal(width, height, random(7) + 5.5, new float[] {random(amt) - amt / 2, random(amt) - amt / 2, random(amt) - amt / 2}));
+      //images.add(generateNoiseHorizontal(width, height, random(5.5, 12.5), new float[] {random(-amt, amt), random(-amt, amt), random(-amt, amt)}));
+      images.add(generateNoiseHorizontal(width, height, 5.5, new float[] {random(-amt, amt), random(-amt, amt), random(-amt, amt)}));
     }
     delay(3000);
   }
